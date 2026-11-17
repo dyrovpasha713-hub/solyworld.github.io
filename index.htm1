@@ -1,0 +1,205 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SOLYWORLD — Игровой магазин</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0a0d18;color:#f5f5fa;font-family:Arial,sans-serif}
+header{height:70px;padding:0 6%;display:flex;align-items:center;justify-content:space-between;background:#11182a;border-bottom:1px solid #29344c;position:sticky;top:0;z-index:10}
+.logo{font-size:24px;font-weight:900;color:#ffc65c;letter-spacing:2px}
+nav{display:flex;gap:18px}
+nav a{color:#d9dfed;text-decoration:none;font-size:13px}
+.hero{text-align:center;padding:75px 15px 50px;background:radial-gradient(ellipse at top,#46306b,#131a30 55%,#0a0d18)}
+.hero h1{font-size:clamp(38px,8vw,70px);margin:0;color:white}
+.hero h1 span{color:#ffc65c}
+.hero p{color:#c2c9da;line-height:1.7}
+.ip{display:inline-flex;gap:12px;align-items:center;padding:12px 16px;border:1px solid #ffc65c;border-radius:10px;background:#11182a;margin-top:15px}
+button{cursor:pointer;border:0;border-radius:8px;padding:11px 16px;background:#ffc65c;color:#17131b;font-weight:bold}
+main{max-width:1250px;margin:auto;padding:35px 20px}
+.heading{text-align:center;margin:30px 0}
+.heading h2{font-size:30px}
+.heading p{color:#9da9c2}
+.tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:25px 0}
+.tab{background:#1b2439;color:white;border:1px solid #35415d}
+.tab.active{background:#ffc65c;color:#17131b}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:17px}
+.card{background:linear-gradient(145deg,#1c2740,#121a2c);border:1px solid #34415c;border-radius:15px;padding:21px;display:flex;flex-direction:column;min-width:0}
+.card h3{font-size:23px;margin:8px 0;color:var(--accent,#ffc65c)}
+.category{font-size:10px;letter-spacing:1.5px;color:#9da9c2}
+.price{font-size:27px;font-weight:900;margin:12px 0}
+.desc{color:#aeb8cd;font-size:13px;line-height:1.6;flex:1}
+.details{display:none;background:#0c1221;padding:14px;border-radius:9px;margin:12px 0;color:#d4dced;font-size:13px;line-height:1.9}
+.details.open{display:block}
+.details b{color:#ffc65c}
+.actions{display:flex;gap:8px;margin-top:12px}
+.actions button{flex:1;font-size:12px}
+.secondary{background:#34425e;color:white}
+.note{font-size:11px;color:#e5b978;margin-top:12px}
+.empty{color:#aeb8cd;text-align:center;padding:35px}
+.about{margin-top:60px;background:#172139;padding:25px;border-radius:15px;line-height:1.8;color:#c7d0e3}
+footer{text-align:center;padding:30px;color:#8390a9;border-top:1px solid #26334b;margin-top:40px}
+@media(max-width:600px){
+ header{padding:0 15px}
+ .logo{font-size:19px}
+ nav{gap:9px}
+ nav a{font-size:11px}
+ main{padding:20px 13px}
+ .hero{padding-top:55px}
+ .ip{flex-wrap:wrap;justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<header>
+ <div class="logo">SOLYWORLD</div>
+ <nav>
+  <a href="#home">Главная</a>
+  <a href="#shop">Магазин</a>
+  <a href="#about">О сервере</a>
+ </nav>
+</header>
+
+<section class="hero" id="home">
+ <h1>SOLY<span>WORLD</span></h1>
+ <p>ТВОЙ МИР — ТВОИ ПРАВИЛА<br>
+ Играй, развивайся и получай новые возможности!</p>
+ <div class="ip">
+  <b>solyworld.polit.day</b>
+  <button onclick="copyIP()">КОПИРОВАТЬ IP</button>
+ </div>
+ <p id="status"></p>
+</section>
+
+<main id="shop">
+ <div class="heading">
+  <h2>ИГРОВОЙ МАГАЗИН</h2>
+  <p>Выбирай категорию и находи нужный товар</p>
+ </div>
+
+ <div class="tabs" id="tabs">
+  <button class="tab active" data-cat="ranks">Привилегии</button>
+  <button class="tab" data-cat="money">Игровая валюта</button>
+  <button class="tab" data-cat="relics">Риллики</button>
+  <button class="tab" data-cat="services">Услуги</button>
+  <button class="tab" data-cat="cases">Донат-кейсы</button>
+ </div>
+
+ <div class="grid" id="products"></div>
+
+ <section class="about" id="about">
+  <h2 style="color:#ffc65c">О SOLYWORLD</h2>
+  <p>Добро пожаловать в официальный магазин игрового сервера SOLYWORLD!</p>
+  <p><b>Адрес сервера:</b> solyworld.polit.day</p>
+  <p><b>Главный администратор:</b> Кирилл</p>
+  <p>Покупай привилегии, игровую валюту и дополнительные услуги.</p>
+ </section>
+</main>
+
+<footer>
+ © 2026 SOLYWORLD<br>
+ Игровой магазин сервера
+</footer>
+
+<script>
+const products = [
+{cat:"ranks",name:"HERO",price:"2 ₽",color:"#668aff",
+desc:"Начальная привилегия.",
+commands:["/kit hero","/craft","/getpos"],
+bonus:["+5 слотов аукциона","2 привата"]},
+
+{cat:"ranks",name:"TITAN",price:"10 ₽",color:"#e7ae45",
+desc:"Дополнительные игровые возможности.",
+commands:["/kit titan","/hat","/feed","/rtp"],
+bonus:["+7 слотов аукциона","4 привата","3 дома /sethome"]},
+
+{cat:"ranks",name:"AVENGER",price:"80 ₽",color:"#4ed18a",
+desc:"Расширенные команды и возможности.",
+commands:["/kit avenger","/enderchest","/ext","/ignore","/clear"],
+bonus:["+9 слотов аукциона","8 приватов","6 домов /sethome"]},
+
+{cat:"ranks",name:"OVERLORD",price:"100 ₽",color:"#48c9e8",
+desc:"Продвинутый игровой статус.",
+commands:["/kit overlord","/repair","/near","/ptime"],
+bonus:["+14 слотов аукциона","16 приватов","12 домов /sethome"]},
+
+{cat:"ranks",name:"MAGISTER",price:"240 ₽",color:"#bd83ff",
+desc:"Привилегия MAGISTER.",
+commands:[],bonus:[],note:"Команды и бонусы ожидают уточнения."},
+
+{cat:"ranks",name:"IMPERATOR",price:"400 ₽",color:"#ff6262",
+desc:"Мощная привилегия с уникальными возможностями.",
+commands:["/kit imperator","/kit plus","/broadcast","/rtp"],
+bonus:["x2.0 за убийства","+36 слотов аукциона","96 приватов","48 домов /sethome"]},
+
+{cat:"ranks",name:"DRAGON",price:"999 ₽",color:"#c06bff",
+desc:"Особая привилегия с расширенными возможностями.",
+commands:["/kit dragon","/kit pluspro","/fly","/grant","/sun"],
+bonus:["x3.0 за убийства и мобов","+999 слотов аукциона","999 приватов","999 домов /sethome"],
+extra:["Все преимущества HELPER"]},
+
+{cat:"ranks",name:"GOD",price:"2 400 ₽",color:"#ffcf69",
+desc:"Особый статус проекта.",
+commands:[],
+bonus:[],
+extra:["Добавление в беседу администрации ВКонтакте","Прямая связь с администрацией","Вхождение в команду проекта","Вход на заполненный сервер"],
+note:"Без неприкосновенности со стороны администрации."},
+
+{cat:"ranks",name:"HELPER",price:"2 999 ₽",color:"#50dfbd",
+desc:"Статус с дополнительными возможностями проекта.",
+commands:[],
+bonus:[],
+extra:["Неприкосновенность со стороны администрации","Добавление в админ-беседу ВКонтакте","Прямая связь с администрацией","Вхождение в команду проекта","Вход на заполненный сервер"]},
+
+{cat:"ranks",name:"PEGAS",price:"1 199 ₽",color:"#71dfff",
+desc:"Уникальный набор и повышенные множители.",
+commands:["/kit pegas"],
+bonus:["x5.0 валюты за убийства и мобов","+999 слотов аукциона","999 приватов","999 домов /sethome"],
+extra:["Все преимущества HELPER"]},
+
+{cat:"money",name:"100K",price:"99 ₽",desc:"Игровая валюта — 100 000."},
+{cat:"money",name:"250K",price:"249 ₽",desc:"Игровая валюта — 250 000."},
+{cat:"money",name:"500K",price:"499 ₽",desc:"Игровая валюта — 500 000."},
+{cat:"money",name:"До 10KK",price:"Уточняется",desc:"Игровая валюта. Остальные номиналы и цены будут добавлены."},
+
+{cat:"relics",name:"10 РИЛЛИКОВ",price:"10 ₽",desc:"Набор из 10 рилликов."},
+{cat:"relics",name:"До 10K",price:"Уточняется",desc:"Другие наборы рилликов ожидают уточнения цен."},
+
+{cat:"services",name:"РАЗБАН",price:"229 ₽",desc:"Услуга разблокировки игрового аккаунта.",note:"Перед заказом уточните условия разбана у администрации."},
+{cat:"services",name:"РАЗМУТ",price:"179 ₽",desc:"Услуга снятия игрового ограничения чата.",note:"Перед заказом уточните условия размутa у администрации."},
+
+{cat:"cases",name:"1 ДОНАТНЫЙ КЕЙС",price:"29 ₽",desc:"Один донатный кейс."},
+{cat:"cases",name:"3 ДОНАТНЫХ КЕЙСА",price:"89 ₽",desc:"Набор из трёх донатных кейсов."},
+{cat:"cases",name:"10 ДОНАТНЫХ КЕЙСОВ",price:"899 ₽",desc:"Набор из десяти донатных кейсов."}
+];
+
+const labels={
+ranks:"ПРИВИЛЕГИИ",
+money:"ИГРОВАЯ ВАЛЮТА",
+relics:"РИЛЛИКИ",
+services:"УСЛУГИ",
+cases:"ДОНАТНЫЕ КЕЙСЫ"
+};
+
+let current="ranks";
+
+function render(){
+ const root=document.getElementById("products");
+ root.innerHTML="";
+ const filtered=products.filter(p=>p.cat===current);
+ filtered.forEach((p,i)=>{
+  const el=document.createElement("article");
+  el.className="card";
+  el.style.setProperty("--accent",p.color||"#ffc65c");
+  const section=(title,arr)=>arr?.length?
+   `<b>${title}</b><br>${arr.map(x=>"• "+x).join("<br>")}<br><br>`:"";
+  el.innerHTML=`
+   <div class="category">${labels[p.cat]}</div>
+   <h3>${p.name}</h3>
+   <div class="price">${p.price}</div>
+   <div class="desc">${p.desc||""}</div>
+   <div class="actions">
+    <button class="secondary" data-detail="${i}">Подробнее</button>
