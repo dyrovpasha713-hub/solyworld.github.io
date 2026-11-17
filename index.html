@@ -184,22 +184,61 @@ services:"УСЛУГИ",
 cases:"ДОНАТНЫЕ КЕЙСЫ"
 };
 
-let current="ranks";
+let current = "ranks";
 
-function render(){
- const root=document.getElementById("products");
- root.innerHTML="";
- const filtered=products.filter(p=>p.cat===current);
- filtered.forEach((p,i)=>{
-  const el=document.createElement("article");
-  el.className="card";
-  el.style.setProperty("--accent",p.color||"#ffc65c");
-  const section=(title,arr)=>arr?.length?
-   `<b>${title}</b><br>${arr.map(x=>"• "+x).join("<br>")}<br><br>`:"";
-  el.innerHTML=`
-   <div class="category">${labels[p.cat]}</div>
-   <h3>${p.name}</h3>
-   <div class="price">${p.price}</div>
-   <div class="desc">${p.desc||""}</div>
-   <div class="actions">
-    <button class="secondary" data-detail="${i}">Подробнее</button>
+function render() {
+  const root = document.getElementById("products");
+  root.innerHTML = "";
+
+  const filtered = products.filter(p => p.cat === current);
+
+  filtered.forEach(p => {
+    const el = document.createElement("article");
+    el.className = "card";
+    el.style.setProperty("--accent", p.color || "#ffc65c");
+
+    const section = (title, arr) => {
+      if (!arr || !arr.length) return "";
+      return `<b>${title}</b><br>${arr.map(x => "• " + x).join("<br>")}<br><br>`;
+    };
+
+    el.innerHTML = `
+      <div class="category">${labels[p.cat]}</div>
+      <h3>${p.name}</h3>
+      <div class="price">${p.price}</div>
+      <div class="desc">${p.desc || ""}</div>
+      <div class="details">
+        ${section("КОМАНДЫ", p.commands)}
+        ${section("БОНУСЫ", p.bonus)}
+        ${section("ДОПОЛНИТЕЛЬНО", p.extra)}
+        ${p.note ? `<div class="note">${p.note}</div>` : ""}
+      </div>
+      <div class="actions">
+        <button class="secondary">Подробнее</button>
+      </div>
+    `;
+
+    el.querySelector("button").addEventListener("click", () => {
+      el.querySelector(".details").classList.toggle("open");
+    });
+
+    root.appendChild(el);
+  });
+}
+
+document.getElementById("tabs").addEventListener("click", event => {
+  const button = event.target.closest(".tab");
+  if (!button) return;
+
+  document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+  button.classList.add("active");
+  current = button.dataset.cat;
+  render();
+});
+
+function copyIP() {
+  navigator.clipboard.writeText("solyworld.polit.day")
+    .then(() => document.getElementById("status").textContent = "IP скопирован!");
+}
+
+render();
