@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -38,7 +37,6 @@ main{max-width:1250px;margin:auto;padding:35px 20px}
 .actions button{flex:1;font-size:12px}
 .secondary{background:#34425e;color:white}
 .note{font-size:11px;color:#e5b978;margin-top:12px}
-.empty{color:#aeb8cd;text-align:center;padding:35px}
 .about{margin-top:60px;background:#172139;padding:25px;border-radius:15px;line-height:1.8;color:#c7d0e3}
 footer{text-align:center;padding:30px;color:#8390a9;border-top:1px solid #26334b;margin-top:40px}
 @media(max-width:600px){
@@ -92,10 +90,9 @@ footer{text-align:center;padding:30px;color:#8390a9;border-top:1px solid #26334b
 
  <section class="about" id="about">
   <h2 style="color:#ffc65c">О SOLYWORLD</h2>
-  <p>Добро пожаловать в официальный магазин игрового сервера SOLYWORLD!</p>
-  <p><b>Адрес сервера:</b> solyworld.polit.day</p>
-  <p><b>Главный администратор:</b> Кирилл</p>
-  <p>Покупай привилегии, игровую валюту и дополнительные услуги.</p>
+  <p>Добро пожаловать в официальный игровой магазин сервера SOLYWORLD!</p>
+  <p><b>Администратор:</b> Кирилл</p>
+  <p><b>Адрес сервера:</b> solyworld.polit.day</p><p>Покупай привилегии, игровую валюту и дополнительные услуги.</p>
  </section>
 </main>
 
@@ -176,69 +173,87 @@ extra:["Все преимущества HELPER"]},
 {cat:"cases",name:"10 ДОНАТНЫХ КЕЙСОВ",price:"899 ₽",desc:"Набор из десяти донатных кейсов."}
 ];
 
-const labels={
-ranks:"ПРИВИЛЕГИИ",
-money:"ИГРОВАЯ ВАЛЮТА",
-relics:"РИЛЛИКИ",
-services:"УСЛУГИ",
-cases:"ДОНАТНЫЕ КЕЙСЫ"
+const labels = {
+ ranks:"ПРИВИЛЕГИИ",
+ money:"ИГРОВАЯ ВАЛЮТА",
+ relics:"РИЛЛИКИ",
+ services:"УСЛУГИ",
+ cases:"ДОНАТНЫЕ КЕЙСЫ"
 };
 
 let current = "ranks";
 
 function render() {
-  const root = document.getElementById("products");
-  root.innerHTML = "";
+ const root = document.getElementById("products");
+ root.innerHTML = "";const filtered = products.filter(p => p.cat === current);
 
-  const filtered = products.filter(p => p.cat === current);
+ if (filtered.length === 0) {
+  root.innerHTML = '<div class="empty">В этой категории пока нет товаров.</div>';
+  return;
+ }
 
-  filtered.forEach(p => {
-    const el = document.createElement("article");
-    el.className = "card";
-    el.style.setProperty("--accent", p.color || "#ffc65c");
+ filtered.forEach(p => {
+  const el = document.createElement("article");
+  el.className = "card";
+  el.style.setProperty("--accent", p.color || "#ffc65c");
 
-    const section = (title, arr) => {
-      if (!arr || !arr.length) return "";
-      return `<b>${title}</b><br>${arr.map(x => "• " + x).join("<br>")}<br><br>`;
-    };
+  const section = (title, arr) => {
+   if (!arr || !arr.length) return "";
+   return `<b>${title}</b><br>${arr.map(x => "• " + x).join("<br>")}<br><br>`;
+  };
 
-    el.innerHTML = `
-      <div class="category">${labels[p.cat]}</div>
-      <h3>${p.name}</h3>
-      <div class="price">${p.price}</div>
-      <div class="desc">${p.desc || ""}</div>
-      <div class="details">
-        ${section("КОМАНДЫ", p.commands)}
-        ${section("БОНУСЫ", p.bonus)}
-        ${section("ДОПОЛНИТЕЛЬНО", p.extra)}
-        ${p.note ? `<div class="note">${p.note}</div>` : ""}
-      </div>
-      <div class="actions">
-        <button class="secondary">Подробнее</button>
-      </div>
-    `;
+  el.innerHTML = `
+   <div class="category">${labels[p.cat]}</div>
+   <h3>${p.name}</h3>
+   <div class="price">${p.price}</div>
+   <div class="desc">${p.desc || ""}</div>
+   <div class="details">
+    ${section("КОМАНДЫ", p.commands)}
+    ${section("БОНУСЫ", p.bonus)}
+    ${section("ДОПОЛНИТЕЛЬНО", p.extra)}
+    ${p.note ? `<div class="note">${p.note}</div>` : ""}
+   </div>
+   <div class="actions">
+    <button class="secondary" type="button">Подробнее</button>
+   </div>
+  `;
 
-    el.querySelector("button").addEventListener("click", () => {
-      el.querySelector(".details").classList.toggle("open");
-    });
-
-    root.appendChild(el);
+  el.querySelector("button").addEventListener("click", () => {
+   el.querySelector(".details").classList.toggle("open");
   });
+
+  root.appendChild(el);
+ });
 }
 
 document.getElementById("tabs").addEventListener("click", event => {
-  const button = event.target.closest(".tab");
-  if (!button) return;
+ const button = event.target.closest(".tab");
+ if (!button) return;
 
-  document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
-  button.classList.add("active");
-  current = button.dataset.cat;
-  render();
+ document.querySelectorAll(".tab").forEach(tab => {
+  tab.classList.remove("active");
+ });
+
+ button.classList.add("active");
+ current = button.dataset.cat;
+ render();
 });
 
 function copyIP() {
-  navigator.clipboard.writeText("solyworld.polit.day")
-    .then(() => document.getElementById("status").textContent = "IP скопирован!");
+ const ip = "solyworld.polit.day";
+ const status = document.getElementById("status");
+
+ if (navigator.clipboard && window.isSecureContext) {
+  navigator.clipboard.writeText(ip)
+   .then(() => status.textContent = "IP скопирован!")
+   .catch(() => status.textContent = "Не удалось скопировать IP. Адрес: " + ip);
+ } else {
+  status.textContent = "Адрес сервера: " + ip;
+ }
 }
 
 render();
+</script>
+
+</body>
+</html>
